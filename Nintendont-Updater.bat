@@ -2,13 +2,12 @@
 :top
 CLS
 COLOR 1F
-set currentversion=v1.0
+set currentversion=v1.1
 set url=https://raw.githubusercontent.com/FIX94/Nintendont/master
 set header=echo			Nintendont-Updater %currentversion% von WiiDatabase.de
 mode con cols=85 lines=30
 TITLE Nintendont-Updater %currentversion%
 
-::<---- öberprÅfen, ob die Supportdateien existieren ---->
 :check
 if not exist 7za.exe goto:fehlt
 if not exist sed.exe goto:fehlt
@@ -19,7 +18,6 @@ goto:start
 :fehlt
 CLS
 %header%
-echo.
 echo.
 echo.
 echo		FEHLER: Eine oder mehrere Support-Dateien fehlen
@@ -35,13 +33,12 @@ exit
 CLS
 %header%
 echo.
-if /i "%false%" EQU "1" (echo.) && (echo		 %start% ist keine gÅltige Eingabe.) && (echo		 Bitte versuche es erneut!)
+if /i "%false%" EQU "1" (echo			 	%sdtemp% ist keine gÅltige Eingabe.) && (echo			 	Bitte versuche es erneut!) && (echo.)
 echo.
 echo			Willkommen beim Nintendont-Updater der WiiDatabase!
 echo.
 if /i "%false%" EQU "2" (echo.) && (echo		   %sdtemp:~0,2% existiert nicht, oder Nintendont ist nicht vorhanden)
 if /i "%false%" EQU "3" (echo.) && (echo		 Gebe bitte den Lauwerksbuchstaben mit Doppelpunkt ein!)
-set menu=
 set sdtemp=
 set false=
 echo.
@@ -77,7 +74,8 @@ if /i "%sdtemp:~1,1%" NEQ ":" (set false=3) && (goto:start)
 :skipcheck
 
 set PFAD=%sdtemp%
-if exist "%PFAD%\apps\nintendont" (goto:checkver) else (set false=2) && (goto:start)
+if exist "%PFAD%\apps\nintendont" goto:checkver
+if exist "%PFAD%" goto:newinstall
 
 set false=1
 goto:start
@@ -97,12 +95,13 @@ set availablever=%majorver%.%minorver%
 del NintendontVersion.h
 if exist availablever.bat del availablever.bat
 
-if not exist %PFAD%\apps\nintendont\meta.xml set goto:miniskip
+if not exist %PFAD%\apps\nintendont\meta.xml (set existingver=0) && (goto:miniskip)
 sfk filter -quiet "%PFAD%\apps\nintendont\meta.xml" -+"/version" -rep _"*<version>"_"set existingver="_ -rep _"</version*"__ >existingver.bat
 call existingver.bat
 if exist existingver.bat del existingver.bat
-:miniskip
+if "%existingver%" EQU "" goto:error
 
+:miniskip
 echo.
 echo			Deine Version: %existingver%
 echo			Aktuelle Version: %availablever%
@@ -110,12 +109,11 @@ echo.
 if /i "%existingver:.=%" EQU "%availablever:.=%" goto:aktuell
 if /i "%existingver:.=%" LEQ "%availablever:.=%" goto:update
 if /i "%existingver:.=%" GEQ "%availablever:.=%" goto:zuneu
-pause
 goto:error
 
 :update
 echo.
-echo		    Deine Version ist veraltet und wird aktualisiert!
+if /i "%newinstall%" EQU "N" (echo		    Deine Version ist veraltet und wird aktualisiert!) else (echo		    	Nintendont wird installiert...)
 if exist download rmdir /s /q download\
 mkdir download
 start /min/wait wget --no-check-certificate -P download\ %url%/controllerconfigs/controllers.zip %url%/loader/loader.dol %url%/nintendont/titles.txt %url%/nintendont/meta.xml %url%/nintendont/icon.png https://raw.githubusercontent.com/dolphin-emu/dolphin/master/Data/Sys/GC/font_ansi.bin https://raw.githubusercontent.com/dolphin-emu/dolphin/master/Data/Sys/GC/font_sjis.bin
@@ -127,32 +125,32 @@ move /Y download\titles.txt %PFAD%\apps\nintendont\ >NUL
 move /Y download\font_*.bin %PFAD% >NUL
 rmdir /s /q download\
 echo.
-echo		    Update Version in meta.xml...
+echo		    	Update Version in meta.xml...
 sed "s/<version>.*<\/version>/<version>%availablever%<\/version>/"  %PFAD%\apps\nintendont\meta.xml >meta.xml
 move /Y meta.xml %PFAD%\apps\nintendont\ >NUL
 echo.
-echo		    Nintendont wurde erfolgreich aktualisiert!
+if /i "%newinstall%" EQU "J" (echo		    	Nintendont wurde erfolgreich installiert!) else (echo		    	Nintendont wurde erfolgreich aktualisiert!)
 echo.
-echo		    DrÅcke eine beliebige Taste zum Beenden.
+echo		    	DrÅcke eine beliebige Taste zum Beenden.
 echo.
 pause >NUL
 exit
 
 :aktuell
 echo.
-echo		      Deine Version ist aktuell!
+echo		    	Deine Version ist aktuell!
 echo.
-echo		      DrÅcke eine beliebige Taste zum Beenden.
+echo		    	DrÅcke eine beliebige Taste zum Beenden.
 echo.
 pause >NUL
 exit
 
 :zuneu
 echo.
-echo		      Deine Version ist zu neu!?
-echo		      Bitte downloade Nintendont erneut.
+echo		    	Deine Version ist zu neu!?
+echo		    	Bitte downloade Nintendont erneut.
 echo.
-echo		      DrÅcke eine beliebige Taste zum Beenden.
+echo		    	DrÅcke eine beliebige Taste zum Beenden.
 echo.
 pause >NUL
 exit
@@ -161,8 +159,35 @@ exit
 CLS
 %header%
 echo.
-echo		Ein Fehler ist aufgetreten (Keine Netzverbindung?).
-echo 		DrÅcke eine beliebige Taste zum Beenden.
+echo		    	Ein Fehler ist aufgetreten:
+echo			Keine Netzverbindung oder die Version ist leer.
+echo.
+echo		    	Bitte melde diesen Fehler an WiiDatabase.de.
+echo.
+echo		    	DrÅcke eine beliebige Taste zum Beenden.
 echo.
 pause >NUL
 exit
+
+:newinstall
+CLS
+%header%
+echo.
+if /i "%false%" EQU "1" (echo		 	%newinstall% ist keine gÅltige Eingabe.) && (echo		 	Bitte versuche es erneut!) && (echo.)
+set false=
+set newinstall=
+echo			Nintendont existiert auf %PFAD% nicht.
+echo			Mîchtest du Nintendont nun auf dieses GerÑt herunterladen?
+echo.
+echo			[J] = Ja
+echo			[N] = Nein - ZurÅck zur Laufwerksauswahl
+echo			[B] = Beenden
+echo.
+set /p newinstall=	Eingabe:	
+
+if /i "%newinstall%" EQU "J" (mkdir "%PFAD%\apps\nintendont") && (goto:checkver)
+if /i "%newinstall%" EQU "N" goto:start
+if /i "%newinstall%" EQU "B" exit
+
+set false=1
+goto:newinstall
