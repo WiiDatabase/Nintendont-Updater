@@ -2,7 +2,7 @@
 :top
 CLS
 COLOR 1F
-set currentversion=v1.1
+set currentversion=v1.1.1
 set url=https://raw.githubusercontent.com/FIX94/Nintendont/master
 set header=echo			Nintendont-Updater %currentversion% von WiiDatabase.de
 mode con cols=85 lines=30
@@ -113,7 +113,7 @@ goto:error
 
 :update
 echo.
-if /i "%newinstall%" EQU "N" (echo		    Deine Version ist veraltet und wird aktualisiert!) else (echo		    	Nintendont wird installiert...)
+if /i "%newinstall%" EQU "J" (echo		    	Nintendont wird installiert...) else (echo		    Deine Version ist veraltet und wird aktualisiert!)
 if exist download rmdir /s /q download\
 mkdir download
 start /min/wait wget --no-check-certificate -P download\ %url%/controllerconfigs/controllers.zip %url%/loader/loader.dol %url%/nintendont/titles.txt %url%/nintendont/meta.xml %url%/nintendont/icon.png https://raw.githubusercontent.com/dolphin-emu/dolphin/master/Data/Sys/GC/font_ansi.bin https://raw.githubusercontent.com/dolphin-emu/dolphin/master/Data/Sys/GC/font_sjis.bin
