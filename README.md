@@ -3,6 +3,8 @@ Nintendont-Updater
 
 **Ein [Nintendont](http://wiidatabase.de/wii-u-vwii-downloads/hacks/nintendont-gamecube-spiele/)-Updater für Windows!**
 
+**[>> Download <<](http://wiidatabase.de/downloads/pc-tools/nintendont-updater/)**
+
 ## Features:
 - Hält Nintendont einfach aktuell - es muss nur der Laufwerksbuchstabe angegeben werden!
 - Aktualisiert die meta.xml automatisch
@@ -10,7 +12,7 @@ Nintendont-Updater
 - Open-Source!
 
 ## Das kommt noch!
-- [ ] Erstinstallation
+- [X] Erstinstallation (mit v1.1 hinzugefügt)
 - Mehr?
 
 ## Benutzte Programme
