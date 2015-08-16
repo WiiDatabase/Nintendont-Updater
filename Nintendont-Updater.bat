@@ -2,7 +2,7 @@
 :top
 CLS
 COLOR 1F
-set currentversion=v1.1.1
+set currentversion=v1.2
 set url=https://raw.githubusercontent.com/FIX94/Nintendont/master
 set header=echo			Nintendont-Updater %currentversion% von WiiDatabase.de
 mode con cols=85 lines=30
@@ -103,7 +103,7 @@ if "%existingver%" EQU "" goto:error
 
 :miniskip
 echo.
-echo			Deine Version: %existingver%
+if /i "%newinstall%" EQU "N" echo			Deine Version: %existingver%
 echo			Aktuelle Version: %availablever%
 echo.
 if /i "%existingver:.=%" EQU "%availablever:.=%" goto:aktuell
