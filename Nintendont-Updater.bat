@@ -2,7 +2,7 @@
 :top
 CLS
 COLOR 1F
-set currentversion=v1.2
+set currentversion=v1.2.1
 set url=https://raw.githubusercontent.com/FIX94/Nintendont/master
 set header=echo			Nintendont-Updater %currentversion% von WiiDatabase.de
 mode con cols=85 lines=30
@@ -55,12 +55,13 @@ set /p sdtemp=	Eingabe:
 if /i "%sdtemp%" EQU "0" exit
 
 ::Anfhrungszeichen von der Variable entfernen
-echo "set SDTEMP=%sdtemp%">temp.txt
-sfk filter -quiet temp.txt -rep _""""__>temp.bat
-call temp.bat
-del temp.bat>nul
-del temp.txt>nul
-
+if exist "%TEMP%\Nintendont-Updater" rmdir /s /q "%TEMP%\Nintendont-Updater"
+if not exist "%TEMP%\Nintendont-Updater" mkdir "%TEMP%\Nintendont-Updater"
+echo "set SDTEMP=%sdtemp%">"%TEMP%\Nintendont-Updater\temp.txt"
+sfk filter -quiet "%TEMP%\Nintendont-Updater\temp.txt" -rep _""""__>"%TEMP%\Nintendont-Updater\temp.bat"
+call "%TEMP%\Nintendont-Updater\temp.bat"
+del "%TEMP%\Nintendont-Updater\temp.txt">nul
+del "%TEMP%\Nintendont-Updater\temp.bat">nul
 
 :doublecheck
 set fixslash=
@@ -85,25 +86,24 @@ CLS
 %header%
 echo.
 echo			Checke aktuelle Nintendont-Version...
-start /min/wait wget -t 3 --no-check-certificate "%url%/common/include/NintendontVersion.h"
-if not exist NintendontVersion.h goto:error
-
-sfk filter "NintendontVersion.h"  -+"#define NIN_MAJOR_VERSION" -rep ."#define NIN_MAJOR_VERSION			"."set majorver=".>availablever.bat
-sfk filter "NintendontVersion.h"  -+"#define NIN_MINOR_VERSION" -rep ."#define NIN_MINOR_VERSION			"."set minorver=".>>availablever.bat
-call availablever.bat
+start /min/wait wget -t 3 --no-check-certificate -P "%TEMP%\Nintendont-Updater" "%url%/common/include/NintendontVersion.h"
+if not exist "%TEMP%\Nintendont-Updater\NintendontVersion.h" goto:error
+sfk filter "%TEMP%\Nintendont-Updater\NintendontVersion.h"  -+"#define NIN_MAJOR_VERSION" -rep ."#define NIN_MAJOR_VERSION			"."set majorver=".>"%TEMP%\Nintendont-Updater\availablever.bat"
+sfk filter "%TEMP%\Nintendont-Updater\NintendontVersion.h"  -+"#define NIN_MINOR_VERSION" -rep ."#define NIN_MINOR_VERSION			"."set minorver=".>>"%TEMP%\Nintendont-Updater\availablever.bat"
+call "%TEMP%\Nintendont-Updater\availablever.bat"
 set availablever=%majorver%.%minorver%
-del NintendontVersion.h
-if exist availablever.bat del availablever.bat
+del "%TEMP%\Nintendont-Updater\NintendontVersion.h"
+if exist "%TEMP%\Nintendont-Updater\availablever.bat" del "%TEMP%\Nintendont-Updater\availablever.bat"
 
 if not exist %PFAD%\apps\nintendont\meta.xml (set existingver=0) && (goto:miniskip)
-sfk filter -quiet "%PFAD%\apps\nintendont\meta.xml" -+"/version" -rep _"*<version>"_"set existingver="_ -rep _"</version*"__ >existingver.bat
-call existingver.bat
-if exist existingver.bat del existingver.bat
+sfk filter -quiet "%PFAD%\apps\nintendont\meta.xml" -+"/version" -rep _"*<version>"_"set existingver="_ -rep _"</version*"__ >"%TEMP%\Nintendont-Updater\existingver.bat"
+call "%TEMP%\Nintendont-Updater\existingver.bat"
+if exist "%TEMP%\Nintendont-Updater\existingver.bat" del "%TEMP%\Nintendont-Updater\existingver.bat"
 if "%existingver%" EQU "" goto:error
 
 :miniskip
 echo.
-if /i "%newinstall%" EQU "N" echo			Deine Version: %existingver%
+if /i "%newinstall%" NEQ "J" echo			Deine Version: %existingver%
 echo			Aktuelle Version: %availablever%
 echo.
 if /i "%existingver:.=%" EQU "%availablever:.=%" goto:aktuell
@@ -114,26 +114,24 @@ goto:error
 :update
 echo.
 if /i "%newinstall%" EQU "J" (echo		    	Nintendont wird installiert...) else (echo		    Deine Version ist veraltet und wird aktualisiert!)
-if exist download rmdir /s /q download\
-mkdir download
-start /min/wait wget --no-check-certificate -P download\ %url%/controllerconfigs/controllers.zip %url%/loader/loader.dol %url%/nintendont/titles.txt %url%/nintendont/meta.xml %url%/nintendont/icon.png https://raw.githubusercontent.com/dolphin-emu/dolphin/master/Data/Sys/GC/font_ansi.bin https://raw.githubusercontent.com/dolphin-emu/dolphin/master/Data/Sys/GC/font_sjis.bin
-start /min/wait 7za x -y -o%PFAD%\controllers\ download\controllers.zip
-move /Y download\loader.dol %PFAD%\apps\nintendont\boot.dol >NUL
-move /Y download\icon.png %PFAD%\apps\nintendont\ >NUL
-move /Y download\meta.xml %PFAD%\apps\nintendont\ >NUL
-move /Y download\titles.txt %PFAD%\apps\nintendont\ >NUL
-move /Y download\font_*.bin %PFAD% >NUL
-rmdir /s /q download\
+start /min/wait wget --no-check-certificate -P "%TEMP%\Nintendont-Updater" %url%/controllerconfigs/controllers.zip %url%/loader/loader.dol %url%/nintendont/titles.txt %url%/nintendont/meta.xml %url%/nintendont/icon.png https://raw.githubusercontent.com/dolphin-emu/dolphin/master/Data/Sys/GC/font_ansi.bin https://raw.githubusercontent.com/dolphin-emu/dolphin/master/Data/Sys/GC/font_sjis.bin
+start /min/wait 7za x -y -o%PFAD%\controllers\ "%TEMP%\Nintendont-Updater\controllers.zip"
+move /Y "%TEMP%\Nintendont-Updater\loader.dol" %PFAD%\apps\nintendont\boot.dol >NUL
+move /Y "%TEMP%\Nintendont-Updater\icon.png" %PFAD%\apps\nintendont\ >NUL
+move /Y "%TEMP%\Nintendont-Updater\meta.xml" %PFAD%\apps\nintendont\ >NUL
+move /Y "%TEMP%\Nintendont-Updater\titles.txt" %PFAD%\apps\nintendont\ >NUL
+move /Y "%TEMP%\Nintendont-Updater\font_*.bin" %PFAD% >NUL
 echo.
 echo		    	Update Version in meta.xml...
-sed "s/<version>.*<\/version>/<version>%availablever%<\/version>/"  %PFAD%\apps\nintendont\meta.xml >meta.xml
-move /Y meta.xml %PFAD%\apps\nintendont\ >NUL
+sed "s/<version>.*<\/version>/<version>%availablever%<\/version>/"  %PFAD%\apps\nintendont\meta.xml >"%TEMP%\Nintendont-Updater\meta.xml"
+move /Y "%TEMP%\Nintendont-Updater\meta.xml" %PFAD%\apps\nintendont\ >NUL
 echo.
 if /i "%newinstall%" EQU "J" (echo		    	Nintendont wurde erfolgreich installiert!) else (echo		    	Nintendont wurde erfolgreich aktualisiert!)
 echo.
 echo		    	Drcke eine beliebige Taste zum Beenden.
 echo.
 pause >NUL
+rmdir /s /q "%TEMP%\Nintendont-Updater"
 exit
 
 :aktuell
@@ -143,6 +141,7 @@ echo.
 echo		    	Drcke eine beliebige Taste zum Beenden.
 echo.
 pause >NUL
+rmdir /s /q "%TEMP%\Nintendont-Updater"
 exit
 
 :zuneu
@@ -153,6 +152,7 @@ echo.
 echo		    	Drcke eine beliebige Taste zum Beenden.
 echo.
 pause >NUL
+rmdir /s /q "%TEMP%\Nintendont-Updater"
 exit
 
 :error
