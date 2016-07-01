@@ -2,7 +2,7 @@
 :top
 CLS
 COLOR 1F
-set currentversion=v1.2.1
+set currentversion=v1.2.1.1
 set url=https://raw.githubusercontent.com/FIX94/Nintendont/master
 set header=echo			Nintendont-Updater %currentversion% von WiiDatabase.de
 mode con cols=85 lines=30
