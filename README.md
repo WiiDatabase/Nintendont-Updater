@@ -11,6 +11,8 @@ Nintendont-Updater
 - Aktualisiert auf die neueste Version von [GitHub](https://github.com/FIX94/Nintendont)
 - Open-Source!
 
+![Nintendont-Updater Screenshot](https://static.wiidatabase.de/Nintendont-Updater.png)
+
 ## Das kommt noch!
 - [X] Erstinstallation (mit v1.1 hinzugefügt)
 - Mehr?

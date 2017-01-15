@@ -2,7 +2,7 @@
 :top
 CLS
 COLOR 1F
-set currentversion=v1.2.1.1
+set currentversion=v1.2.1.2
 set url=https://raw.githubusercontent.com/FIX94/Nintendont/master
 set header=echo			Nintendont-Updater %currentversion% von WiiDatabase.de
 mode con cols=85 lines=30
@@ -114,13 +114,12 @@ goto:error
 :update
 echo.
 if /i "%newinstall%" EQU "J" (echo		    	Nintendont wird installiert...) else (echo		    Deine Version ist veraltet und wird aktualisiert!)
-start /min/wait wget --no-check-certificate -P "%TEMP%\Nintendont-Updater" %url%/controllerconfigs/controllers.zip %url%/loader/loader.dol %url%/nintendont/titles.txt %url%/nintendont/meta.xml %url%/nintendont/icon.png https://raw.githubusercontent.com/dolphin-emu/dolphin/master/Data/Sys/GC/font_ansi.bin https://raw.githubusercontent.com/dolphin-emu/dolphin/master/Data/Sys/GC/font_sjis.bin
+start /min/wait wget --no-check-certificate -P "%TEMP%\Nintendont-Updater" %url%/controllerconfigs/controllers.zip %url%/loader/loader.dol %url%/nintendont/titles.txt %url%/nintendont/meta.xml %url%/nintendont/icon.png
 start /min/wait 7za x -y -o%PFAD%\controllers\ "%TEMP%\Nintendont-Updater\controllers.zip"
 move /Y "%TEMP%\Nintendont-Updater\loader.dol" %PFAD%\apps\nintendont\boot.dol >NUL
 move /Y "%TEMP%\Nintendont-Updater\icon.png" %PFAD%\apps\nintendont\ >NUL
 move /Y "%TEMP%\Nintendont-Updater\meta.xml" %PFAD%\apps\nintendont\ >NUL
 move /Y "%TEMP%\Nintendont-Updater\titles.txt" %PFAD%\apps\nintendont\ >NUL
-move /Y "%TEMP%\Nintendont-Updater\font_*.bin" %PFAD% >NUL
 echo.
 echo		    	Update Version in meta.xml...
 sed "s/<version>.*<\/version>/<version>%availablever%<\/version>/"  %PFAD%\apps\nintendont\meta.xml >"%TEMP%\Nintendont-Updater\meta.xml"
