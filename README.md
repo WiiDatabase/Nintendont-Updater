@@ -14,5 +14,3 @@ Nintendont-Updater
 
 ## TODO
 - [ ] EXE für 32-Bit
-- [ ] PermissionError/FileNotFoundError handlen
-- [ ] Programm fertigstellen (obviously)
