@@ -77,13 +77,16 @@ def choose_device():
         print('			Gib die Ziffer deines USB-Gerätes bzw. deiner SD-Karte an.\n')
         # Show all partitions to the user
         partitions = psutil.disk_partitions()
+        all_devices = []
         for num, partition in enumerate(partitions):
-            free_space = round(psutil.disk_usage(partition.mountpoint).free / 1024 / 1024 / 1024, 2)
-            print('     #{0} - {1}, {2}'.format(
-                str(num + 1),
-                partition.mountpoint,
-                str(free_space).replace('.', ',') + ' GB frei')
-            )
+            if partition.fstype != '':
+                free_space = round(psutil.disk_usage(partition.mountpoint).free / 1024 / 1024 / 1024, 2)
+                print('     #{0} - {1}, {2}'.format(
+                    str(num + 1),
+                    partition.mountpoint,
+                    str(free_space).replace('.', ',') + ' GB frei')
+                )
+                all_devices.append(partition)
 
         if error == 'ValueError':  # if input is not a number
             print('\n     Bitte eine Zahl angeben!')
@@ -104,7 +107,7 @@ def choose_device():
             continue
 
         try:
-            device = psutil.disk_partitions()[usbdevice - 1]
+            device = all_devices[usbdevice - 1]
         except IndexError:  # if input is too high
             error = 'IndexError'
             continue
@@ -177,21 +180,51 @@ def install_nintendont(device):
     nintendont_path = os.path.join(device.mountpoint, 'apps', 'nintendont')
     controllers_path = os.path.join(device.mountpoint, 'controllers')
     if not os.path.exists(nintendont_path):
-        os.makedirs(nintendont_path)
+        try:
+            os.makedirs(nintendont_path)
+        except (FileNotFoundError, PermissionError) as exception:
+            clean_up_tempdir()
+            print('\n	Ein Fehler ist aufgetreten: ' + str(exception))
+            input('\n			Drücke ENTER, um zu beenden')
+            sys.exit(1)
     if not os.path.exists(controllers_path):
-        os.makedirs(controllers_path)
+        try:
+            os.makedirs(controllers_path)
+        except (FileNotFoundError, PermissionError) as exception:
+            clean_up_tempdir()
+            print('\n	Ein Fehler ist aufgetreten: ' + str(exception))
+            input('\n			Drücke ENTER, um zu beenden')
+            sys.exit(1)
 
     for file in full_file_path:
         basefile = os.path.basename(file)
         print('			Verschiebe ' + basefile + '...')
         if basefile == 'loader.dol':
-            copy(file, os.path.join(nintendont_path, 'boot.dol'))
+            try:
+                copy(file, os.path.join(nintendont_path, 'boot.dol'))
+            except (FileNotFoundError, PermissionError) as exception:
+                clean_up_tempdir()
+                print('\n	Ein Fehler ist aufgetreten: ' + str(exception))
+                input('\n			Drücke ENTER, um zu beenden')
+                sys.exit(1)
         elif basefile == 'controllers.zip':
             print('			Entpacke...')
             with zipfile.ZipFile(file, "r") as zip_ref:
-                zip_ref.extractall(controllers_path)
+                try:
+                    zip_ref.extractall(controllers_path)
+                except (FileNotFoundError, PermissionError) as exception:
+                    clean_up_tempdir()
+                    print('\n	Ein Fehler ist aufgetreten: ' + str(exception))
+                    input('\n			Drücke ENTER, um zu beenden')
+                    sys.exit(1)
         else:
-            copy(file, nintendont_path)
+            try:
+                copy(file, nintendont_path)
+            except (FileNotFoundError, PermissionError) as exception:
+                clean_up_tempdir()
+                print('\n	Ein Fehler ist aufgetreten: ' + str(exception))
+                input('\n			Drücke ENTER, um zu beenden')
+                sys.exit(1)
 
 
 def update_meta_xml(path, nintendont_ver):
@@ -201,7 +234,6 @@ def update_meta_xml(path, nintendont_ver):
     with open(path, "w") as file:
         for line in lines:
             file.write(re.sub(r'<version>.+</version>', '<version>' + nintendont_ver + '</version>', line))
-
 
 
 def main():
