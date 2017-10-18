@@ -88,6 +88,15 @@ def choose_device():
                 )
                 all_devices.append(partition)
 
+        if len(all_devices) == 0:
+            cls()
+            print(header)
+            print('			Willkommen beim Nintendont-Updater der WiiDatabase!\n')
+            print('\n			Keine Geräte gefunden, auf denen Nintendont installiert werden kann.')
+            input('\n			Drücke ENTER, um zu beenden.')
+            sys.exit(0)
+
+
         if error == 'ValueError':  # if input is not a number
             print('\n     Bitte eine Zahl angeben!')
         elif error == 'IndexError':  # if input is not in list or <= 0
@@ -131,7 +140,7 @@ def get_nintendont_version():
     if not version_file:
         clean_up_tempdir()
         print('			Die aktuelle Version konnte nicht geholt werden :(')
-        input('			Drücke ENTER, um zu beenden')
+        input('			Drücke ENTER, um zu beenden.')
         sys.exit(1)
 
     major = None
@@ -172,7 +181,7 @@ def install_nintendont(device):
             print('\n			Fehler beim Herunterladen, prüfe deine Internetverbindung,')
             print('			und prüfe, ob die URL erreichbar ist:')
             print(base + file)
-            input('\n			Drücke ENTER, um zu beenden')
+            input('\n			Drücke ENTER, um zu beenden.')
             sys.exit(1)
         full_file_path.append(downloaded_file)
     print('')
@@ -185,7 +194,7 @@ def install_nintendont(device):
         except (FileNotFoundError, PermissionError) as exception:
             clean_up_tempdir()
             print('\n	Ein Fehler ist aufgetreten: ' + str(exception))
-            input('\n			Drücke ENTER, um zu beenden')
+            input('\n			Drücke ENTER, um zu beenden.')
             sys.exit(1)
     if not os.path.exists(controllers_path):
         try:
@@ -193,7 +202,7 @@ def install_nintendont(device):
         except (FileNotFoundError, PermissionError) as exception:
             clean_up_tempdir()
             print('\n	Ein Fehler ist aufgetreten: ' + str(exception))
-            input('\n			Drücke ENTER, um zu beenden')
+            input('\n			Drücke ENTER, um zu beenden.')
             sys.exit(1)
 
     for file in full_file_path:
@@ -205,7 +214,7 @@ def install_nintendont(device):
             except (FileNotFoundError, PermissionError) as exception:
                 clean_up_tempdir()
                 print('\n	Ein Fehler ist aufgetreten: ' + str(exception))
-                input('\n			Drücke ENTER, um zu beenden')
+                input('\n			Drücke ENTER, um zu beenden.')
                 sys.exit(1)
         elif basefile == 'controllers.zip':
             print('			Entpacke...')
@@ -215,7 +224,7 @@ def install_nintendont(device):
                 except (FileNotFoundError, PermissionError) as exception:
                     clean_up_tempdir()
                     print('\n	Ein Fehler ist aufgetreten: ' + str(exception))
-                    input('\n			Drücke ENTER, um zu beenden')
+                    input('\n			Drücke ENTER, um zu beenden.')
                     sys.exit(1)
         else:
             try:
@@ -223,7 +232,7 @@ def install_nintendont(device):
             except (FileNotFoundError, PermissionError) as exception:
                 clean_up_tempdir()
                 print('\n	Ein Fehler ist aufgetreten: ' + str(exception))
-                input('\n			Drücke ENTER, um zu beenden')
+                input('\n			Drücke ENTER, um zu beenden.')
                 sys.exit(1)
 
 
@@ -247,7 +256,7 @@ def main():
     nintendont_ver = get_nintendont_version()
     if not nintendont_ver:
         print('			Die aktuelle Version konnte nicht geholt werden :(')
-        input('			Drücke ENTER, um zu beenden')
+        input('			Drücke ENTER, um zu beenden.')
         clean_up_tempdir()
         sys.exit(1)
 
@@ -275,13 +284,13 @@ def main():
         elif nintendont_ver_int == installed_ver_int:
             clean_up_tempdir()
             print('\n			Deine Version ist aktuell!')
-            input('\n			Drücke ENTER, um zu beenden')
+            input('\n			Drücke ENTER, um zu beenden.')
             sys.exit(0)
         elif nintendont_ver_int < installed_ver_int:
             clean_up_tempdir()
             print('\n			Deine Version ist zu neu!?')
             print('			Bitte downloade Nintendont erneut.')
-            input('\n			Drücke ENTER, um zu beenden')
+            input('\n			Drücke ENTER, um zu beenden.')
             sys.exit(1)
 
     install_nintendont(device)
@@ -292,7 +301,7 @@ def main():
         print('\n			Nintendont wurde erfolgreich installiert!')
     else:
         print('\n			Nintendont wurde erfolgreich aktualisiert!')
-    input('\n			Drücke ENTER, um zu beenden')
+    input('\n			Drücke ENTER, um zu beenden.')
     sys.exit(0)
 
 
