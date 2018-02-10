@@ -96,7 +96,6 @@ def choose_device():
             input('\n			Drücke ENTER, um zu beenden.')
             sys.exit(0)
 
-
         if error == 'ValueError':  # if input is not a number
             print('\n     Bitte eine Zahl angeben!')
         elif error == 'IndexError':  # if input is not in list or <= 0
