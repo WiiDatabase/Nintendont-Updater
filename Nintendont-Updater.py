@@ -11,7 +11,7 @@ import psutil
 from requests import get
 
 currentversion = '2.0'
-header = '			Nintendont Updater v' + currentversion + ' von WiiDatabase.de\n'
+header = '		Nintendont Updater v' + currentversion + ' von WiiDatabase.de\n'
 base = 'https://raw.githubusercontent.com/FIX94/Nintendont/master'
 working_dir = os.path.join(tempfile.gettempdir(), 'Nintendont-Updater')
 
@@ -49,8 +49,8 @@ def fat32_req():
     while True:
         cls()
         print(header)
-        print('			Das gewählte Gerät ist nicht in FAT32 formatiert!\n')
-        print('			Nintendont kann nur von einem FAT32-Gerät geladen werden.\n')
+        print('		Das gewählte Gerät ist nicht in FAT32 formatiert!\n')
+        print('		Nintendont kann nur von einem FAT32-Gerät geladen werden.\n')
         if error == 'AnswerError':
             print('\n     Ungültige Eingabe!')
         try:
@@ -73,27 +73,32 @@ def choose_device():
     while True:
         cls()
         print(header)
-        print('			Willkommen beim Nintendont-Updater der WiiDatabase!\n')
-        print('			Gib die Ziffer deines USB-Gerätes bzw. deiner SD-Karte an.\n')
+        print('		Willkommen beim Nintendont-Updater der WiiDatabase!\n')
+        print('		Gib die Ziffer deines USB-Gerätes bzw. deiner SD-Karte an.\n')
         # Show all partitions to the user
         partitions = psutil.disk_partitions()
-        all_devices = []
+        useful_partitons = []
+
+        # Filter partitions
         for num, partition in enumerate(partitions):
-            # TODO: Ignore empty fstype and /, /boot and /snap
+            if partition.fstype != '' and partition.mountpoint != '/' and not partition.mountpoint.startswith(
+                    '/snap') and not partition.mountpoint.startswith('/boot'):
+                useful_partitons.append(partition)
+
+        for num, partition in enumerate(useful_partitons):
             free_space = round(psutil.disk_usage(partition.mountpoint).free / 1024 / 1024 / 1024, 2)
             print('     #{0} - {1}, {2}'.format(
                 str(num + 1),
                 partition.mountpoint,
                 str(free_space).replace('.', ',') + ' GB frei')
             )
-            all_devices.append(partition)
 
-        if len(all_devices) == 0:
+        if len(useful_partitons) == 0:
             cls()
             print(header)
             print('			Willkommen beim Nintendont-Updater der WiiDatabase!\n')
-            print('\n			Keine Geräte gefunden, auf denen Nintendont installiert werden kann.')
-            input('\n			Drücke ENTER, um zu beenden.')
+            print('\n		Keine Geräte gefunden, auf denen Nintendont installiert werden kann.')
+            input('\n		Drücke ENTER, um zu beenden.')
             sys.exit(0)
 
         if error == 'ValueError':  # if input is not a number
@@ -115,12 +120,12 @@ def choose_device():
             continue
 
         try:
-            device = all_devices[usbdevice - 1]
+            device = useful_partitons[usbdevice - 1]
         except IndexError:  # if input is too high
             error = 'IndexError'
             continue
 
-        if device.fstype != 'FAT32':
+        if device.fstype != 'FAT32' and device.fstype != 'vfat':
             use_it = fat32_req()
             if use_it:
                 break
@@ -134,12 +139,12 @@ def choose_device():
 def get_nintendont_version():
     cls()
     print(header)
-    print('			Prüfe aktuelle Nintendont-Version...')
+    print('		Prüfe aktuelle Nintendont-Version...')
     version_file = download_file(url=base + '/common/include/NintendontVersion.h')
     if not version_file:
         clean_up_tempdir()
-        print('			Die aktuelle Version konnte nicht geholt werden :(')
-        input('			Drücke ENTER, um zu beenden.')
+        print('		Die aktuelle Version konnte nicht geholt werden :(')
+        input('		Drücke ENTER, um zu beenden.')
         sys.exit(1)
 
     major = None
@@ -173,14 +178,14 @@ def install_nintendont(device):
     full_file_path = []
     print('')
     for file in files:
-        print('			Downloade ' + os.path.basename(file) + '...')
+        print('		Downloade ' + os.path.basename(file) + '...')
         downloaded_file = download_file(base + file)
         if not downloaded_file:
             clean_up_tempdir()
-            print('\n			Fehler beim Herunterladen, prüfe deine Internetverbindung,')
-            print('			und prüfe, ob die URL erreichbar ist:')
+            print('\n		Fehler beim Herunterladen, prüfe deine Internetverbindung,')
+            print('		und prüfe, ob die URL erreichbar ist:')
             print(base + file)
-            input('\n			Drücke ENTER, um zu beenden.')
+            input('\n		Drücke ENTER, um zu beenden.')
             sys.exit(1)
         full_file_path.append(downloaded_file)
     print('')
@@ -206,7 +211,7 @@ def install_nintendont(device):
 
     for file in full_file_path:
         basefile = os.path.basename(file)
-        print('			Verschiebe ' + basefile + '...')
+        print('		Verschiebe ' + basefile + '...')
         if basefile == 'loader.dol':
             try:
                 copy(file, os.path.join(nintendont_path, 'boot.dol'))
@@ -216,14 +221,14 @@ def install_nintendont(device):
                 input('\n			Drücke ENTER, um zu beenden.')
                 sys.exit(1)
         elif basefile == 'controllers.zip':
-            print('			Entpacke...')
+            print('		Entpacke...')
             with zipfile.ZipFile(file, "r") as zip_ref:
                 try:
                     zip_ref.extractall(controllers_path)
                 except (FileNotFoundError, PermissionError) as exception:
                     clean_up_tempdir()
                     print('\n	Ein Fehler ist aufgetreten: ' + str(exception))
-                    input('\n			Drücke ENTER, um zu beenden.')
+                    input('\n		Drücke ENTER, um zu beenden.')
                     sys.exit(1)
         else:
             try:
@@ -231,12 +236,12 @@ def install_nintendont(device):
             except (FileNotFoundError, PermissionError) as exception:
                 clean_up_tempdir()
                 print('\n	Ein Fehler ist aufgetreten: ' + str(exception))
-                input('\n			Drücke ENTER, um zu beenden.')
+                input('\n		Drücke ENTER, um zu beenden.')
                 sys.exit(1)
 
 
 def update_meta_xml(path, nintendont_ver):
-    print('\n			Aktualisiere Version in der meta.xml...')
+    print('\n		Aktualisiere Version in der meta.xml...')
     with open(path, "r") as file:
         lines = file.readlines()
     with open(path, "w") as file:
@@ -254,8 +259,8 @@ def main():
     # Get current Nintendont version
     nintendont_ver = get_nintendont_version()
     if not nintendont_ver:
-        print('			Die aktuelle Version konnte nicht geholt werden :(')
-        input('			Drücke ENTER, um zu beenden.')
+        print('		Die aktuelle Version konnte nicht geholt werden :(')
+        input('		Drücke ENTER, um zu beenden.')
         clean_up_tempdir()
         sys.exit(1)
 
@@ -272,24 +277,24 @@ def main():
                         pass
 
     if new_install:
-        print('\n			Installiere Nintendont...')
+        print('\n		Installiere Nintendont...')
     else:
         nintendont_ver_int = int(nintendont_ver.replace('.', ''))
         installed_ver_int = int(installed_ver.replace('.', ''))
-        print('\n			Deine Version: ' + installed_ver)
-        print('			Aktuelle Version: ' + nintendont_ver)
+        print('\n		Deine Version: ' + installed_ver)
+        print('		Aktuelle Version: ' + nintendont_ver)
         if nintendont_ver_int > installed_ver_int:
-            print('\n			Deine Version ist veraltet und wird aktualisiert.')
+            print('\n		Deine Version ist veraltet und wird aktualisiert.')
         elif nintendont_ver_int == installed_ver_int:
             clean_up_tempdir()
-            print('\n			Deine Version ist aktuell!')
-            input('\n			Drücke ENTER, um zu beenden.')
+            print('\n		Deine Version ist aktuell!')
+            input('\n		Drücke ENTER, um zu beenden.')
             sys.exit(0)
         elif nintendont_ver_int < installed_ver_int:
             clean_up_tempdir()
-            print('\n			Deine Version ist zu neu!?')
-            print('			Bitte downloade Nintendont erneut.')
-            input('\n			Drücke ENTER, um zu beenden.')
+            print('\n		Deine Version ist zu neu!?')
+            print('		Bitte downloade Nintendont erneut.')
+            input('\n		Drücke ENTER, um zu beenden.')
             sys.exit(1)
 
     install_nintendont(device)
@@ -297,10 +302,10 @@ def main():
     clean_up_tempdir()
 
     if new_install:
-        print('\n			Nintendont wurde erfolgreich installiert!')
+        print('\n		Nintendont wurde erfolgreich installiert!')
     else:
-        print('\n			Nintendont wurde erfolgreich aktualisiert!')
-    input('\n			Drücke ENTER, um zu beenden.')
+        print('\n		Nintendont wurde erfolgreich aktualisiert!')
+    input('\n		Drücke ENTER, um zu beenden.')
     sys.exit(0)
 
 
