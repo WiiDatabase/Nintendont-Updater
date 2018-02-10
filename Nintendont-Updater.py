@@ -79,14 +79,14 @@ def choose_device():
         partitions = psutil.disk_partitions()
         all_devices = []
         for num, partition in enumerate(partitions):
-            if partition.fstype != '':
-                free_space = round(psutil.disk_usage(partition.mountpoint).free / 1024 / 1024 / 1024, 2)
-                print('     #{0} - {1}, {2}'.format(
-                    str(num + 1),
-                    partition.mountpoint,
-                    str(free_space).replace('.', ',') + ' GB frei')
-                )
-                all_devices.append(partition)
+            # TODO: Ignore empty fstype and /, /boot and /snap
+            free_space = round(psutil.disk_usage(partition.mountpoint).free / 1024 / 1024 / 1024, 2)
+            print('     #{0} - {1}, {2}'.format(
+                str(num + 1),
+                partition.mountpoint,
+                str(free_space).replace('.', ',') + ' GB frei')
+            )
+            all_devices.append(partition)
 
         if len(all_devices) == 0:
             cls()
