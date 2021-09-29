@@ -1,8 +1,45 @@
+::[Bat To Exe Converter]
+::
+::fBE1pAF6MU+EWHreyHcjLQlHcCWMOHm/B6YgzOf4+ueCrFkOaMAqcYPf5pqHLvQW5EHre4Jg42pemd8JHidLexblaxcxyQ==
+::fBE1pAF6MU+EWHreyHcjLQlHcCWMOHm/B6YgzOf4+ueCrFkOaMAqcYPf5pqHLvQW5EHre4Jg42pemd8JHidLeBnlaxcxyQ==
+::fBE1pAF6MU+EWHreyHcjLQlHcCWMOHm/B6YgzOf4+ueCrFkOaMAqcYPf5pqHLvQW5EHre4Jg42pemd8JHidPeRe/IAosrA4=
+::fBE1pAF6MU+EWHreyHcjLQlHcCWMOHm/B6YgzOf4+ueCrFkOaMAqcYPf5pqHLvQW5EHre4Jg42pemd8JHicPZBPlaxcxyQ==
+::YAwzoRdxOk+EWAjk
+::fBw5plQjdCyDJGyX8VAjFDpaSBaHPXiGIrof/eX+4f6Unm8IXe47RKHS1KCLLuQc5FGpQIYp125fivcFDxRWMBuoYW8=
+::YAwzuBVtJxjWCl3EqQJgSA==
+::ZR4luwNxJguZRRnk
+::Yhs/ulQjdF65
+::cxAkpRVqdFKZSDk=
+::cBs/ulQjdF+5
+::ZR41oxFsdFKZSDk=
+::eBoioBt6dFKZSDk=
+::cRo6pxp7LAbNWATEpSI=
+::egkzugNsPRvcWATEpSI=
+::dAsiuh18IRvcCxnZtBJQ
+::cRYluBh/LU+EWAnk
+::YxY4rhs+aU+IeA==
+::cxY6rQJ7JhzQF1fEqQJhZkkaHkrSXA==
+::ZQ05rAF9IBncCkqN+0xwdVsFAlbMbiXqZg==
+::ZQ05rAF9IAHYFVzEqQIeIRVASQqGM2WuS4AM7Onv6vjn
+::eg0/rx1wNQPfEVWB+kM9LVsJDGQ=
+::fBEirQZwNQPfEVWB+kM9LVsJDGQ=
+::cRolqwZ3JBvQF1fEqQIYi99YWESsNWWuA7sY5+bvr+uSpA0ZUe9/eYTPz7GCLOUdqnbwdJgptg==
+::dhA7uBVwLU+EWG6N/WYxPBpWTReHcm+/Zg==
+::YQ03rBFzNR3SWATElA==
+::dhAmsQZ3MwfNWATEvEF5aEkEHVHCcSvoVudNqN/y5s6GtkwfVfE6Noveug==
+::ZQ0/vhVqMQ3MEVWAtB9wSA==
+::Zg8zqx1/OA3MEVWAtB9wSA==
+::dhA7pRFwIByZRRnk
+::Zh4grVQjdCyDJGyX8VAjFDpaSBaHPXiGIroL5uT07u6UnmMUWvY6dovU1KDDFfAX61HhZ9gozn86
+::YB416Ek+ZW8=
+::
+::
+::978f952a14a936cc963da21a135fa983
 @echo off
 :top
 CLS
 COLOR 1F
-set currentversion=v1.2.1.2
+set currentversion=v1.2.2
 set url=https://raw.githubusercontent.com/FIX94/Nintendont/master
 set header=echo			Nintendont-Updater %currentversion% von WiiDatabase.de
 mode con cols=85 lines=30
